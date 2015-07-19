@@ -1,0 +1,8 @@
+/bin/
+/.settings/
+/protocols/
+
+.classpath
+.project
+AIBot.jar
+*.class
