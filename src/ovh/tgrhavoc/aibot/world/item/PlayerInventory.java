@@ -30,13 +30,13 @@ public class PlayerInventory implements Inventory, EventListener {
 	private final ItemStack[] armor = new ItemStack[4];
 	private final ItemStack[] items = new ItemStack[36];
 	private final ItemStack[] crafting = new ItemStack[4];
-
+	
 	private ItemStack craftingOutput = null;
 	private ItemStack selectedItem = null;
-
+	
 	private int delay = 0, currentHeldSlot = 0;
 	private short transactionId = 0;
-
+	
 	public PlayerInventory(MainPlayerEntity player) {
 		this.player = player;
 		player.getWorld().getBot().getEventBus().register(this);
