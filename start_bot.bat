@@ -15,4 +15,4 @@
 @rem     with this program; if not, write to the Free Software Foundation, Inc.,
 @rem     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 @rem ***************************************************************************
-java -jar AIBot.jar --debug --offline --username KyleBot --server localhost:25565 --owner TGR_Havoc --protocol 4
+java -jar AIBot.jar --debug -b --offline --username KyleBot --server localhost:25565 --owner TGR_Havoc --protocol 4

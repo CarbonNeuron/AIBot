@@ -25,6 +25,7 @@ import java.util.Arrays;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import ovh.tgrhavoc.aibot.Util;
 import ovh.tgrhavoc.aibot.wrapper.cli.CLIBotWrapper;
 
 public class Main {
@@ -32,16 +33,31 @@ public class Main {
 		printNotice();
 		
 		OptionParser parser = new OptionParser();
-		parser.acceptsAll(Arrays.asList("d", "debug"));
-		parser.acceptsAll(Arrays.asList("h", "help"));
-		parser.acceptsAll(Arrays.asList("c", "conditions"));
+		parser.acceptsAll(Arrays.asList("d", "debug"), "Enables debug mode (WIP)");
+		parser.acceptsAll(Arrays.asList("h", "help"), "Prints this help");
+		parser.acceptsAll(Arrays.asList("c", "conditions"), "Prints Terms and Conditions");
+		parser.acceptsAll(Arrays.asList("b", "bot"), "Starts bot arguments");
 		
-		String[] mainArgs = Arrays.copyOfRange(args, 0, args.length);
+		int end = 0;
+		for (int i = 0; i< args.length; i++){
+			System.out.println(args[i]);
+			if (args[i].equals("-b") || args[i].equalsIgnoreCase("--bot")){
+				end = i + 1;
+				break;
+			}
+		}
+		
+		String[] mainArgs = Arrays.copyOfRange(args, 0, end);
+		String[] botArgs = Arrays.copyOfRange(args, end, args.length);
+		
+		System.out.println(Util.join(mainArgs) + " (main) ");
+		System.out.println(Util.join(botArgs) + "(bot)");
 		
 		OptionSet options;
 		try {
 			options = parser.parse(mainArgs);
 		} catch(OptionException exception) {
+			exception.printStackTrace();
 			printHelp(parser);
 			return;
 		}
@@ -55,7 +71,7 @@ public class Main {
 			return;
 		}
 		
-		CLIBotWrapper.main(mainArgs);
+		CLIBotWrapper.main(botArgs);
 	}
 	
 	private static void printTC(){
@@ -76,7 +92,7 @@ public class Main {
 		System.out.println("AIBot  Copyright (C) 2015  Jordan Dalton (jordan.8474@gmail.com)");
 		System.out.println("This program comes with ABSOLUTELY NO WARRANTY.");
 		System.out.println("This is free software, and you are welcome to redistribute it");
-		System.out.println("under certain conditions; type \"c\" as a command argument for details.\n\n");
+		System.out.println("under the GNU General Public License.\n\n");
 	}
 	
 	private static void printHelp(OptionParser parser) {
