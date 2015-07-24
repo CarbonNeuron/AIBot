@@ -8,6 +8,7 @@
 		<property name="tempDir" value="temp" />
 		<property name="mainClass" value="ovh.tgrhavoc.aibot.wrapper.Main" />
 		<property name="antContribPath" value="build/ant-contrib-1.0b3.jar" />
+		<property name="resourceDir" value="resources"/>
 	</target>
 
 	<target name="clean" depends="init">
@@ -48,6 +49,7 @@
 			<fileset dir="${outputDir}">
 				<include name="*" />
 			</fileset>
+			<fileset dir="${resourceDir}" />
 		</copy>
 
 		<echo message="Manifest-Version: 1.0${line.separator}Class-Path: .${line.separator}Main-Class: ${mainClass}" file="${outputDir}/manifest.txt" />
