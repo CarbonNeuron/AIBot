@@ -17,10 +17,17 @@
  *******************************************************************************/
 package ovh.tgrhavoc.aibot.schematic;
 
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import ovh.tgrhavoc.aibot.nbt.CompressedStreamTools;
 import ovh.tgrhavoc.aibot.nbt.NBTTagCompound;
-import ovh.tgrhavoc.aibot.world.block.*;
+import ovh.tgrhavoc.aibot.world.block.BlockLocation;
+import ovh.tgrhavoc.aibot.world.block.TileEntity;
 import ovh.tgrhavoc.aibot.world.entity.Entity;
 
 public class Schematic {
@@ -32,7 +39,77 @@ public class Schematic {
 
 	// WorldEdit only
 	private final BlockLocation origin, offset;
+	
+	public Schematic (String schematicName, boolean isLocalResource){
+		String fileName;		
+		if (isLocalResource){
+			fileName = getClass().getClassLoader().getResource("schematics/" + schematicName).getFile();
+		}else{
+			fileName = "/schematics/" + schematicName;
+		}
+		
+		NBTTagCompound compound = null;
+		try {
+			if (isLocalResource){
+				compound = CompressedStreamTools.readStreamAutoDetect(getClass().getClassLoader().getResourceAsStream("schematics/" + schematicName));
+			}else{
+				compound = CompressedStreamTools.readStreamAutoDetect(new FileInputStream(fileName));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (compound == null)
+			throw new NullPointerException("compound couldn't be loaded");
+		
+		width = compound.getShort("Width");
+		height = compound.getShort("Height");
+		length = compound.getShort("Length");
 
+		if(compound.hasKey("WEOriginX") && compound.hasKey("WEOriginY")
+				&& compound.hasKey("WEOriginZ"))
+			origin = new BlockLocation(compound.getInteger("WEOriginX"),
+					compound.getInteger("WEOriginY"),
+					compound.getInteger("WEOriginZ"));
+		else
+			origin = null;
+
+		if(compound.hasKey("WEOffsetX") && compound.hasKey("WEOffsetY")
+				&& compound.hasKey("WEOffsetZ"))
+			offset = new BlockLocation(compound.getInteger("WEOffsetX"),
+					compound.getInteger("WEOffsetY"),
+					compound.getInteger("WEOffsetZ"));
+		else
+			offset = null;
+
+		materialVersion = SchematicMaterialVersion.getByName(compound
+				.getString("Materials"));
+
+		byte[] rawBlocks = compound.getByteArray("Blocks");
+		byte[] rawData = compound.getByteArray("Data");
+
+		blocks = new byte[width][height][length];
+		data = new byte[width][height][length];
+
+		for(int y = 0; y < height; y++) {
+			for(int z = 0; z < length; z++) {
+				for(int x = 0; x < width; x++) {
+					int index = y * width * length + z * width + x;
+					blocks[x][y][z] = rawBlocks[index];
+					data[x][y][z] = rawData[index];
+				}
+			}
+		}
+
+		List<Entity> entities = new ArrayList<Entity>();
+		List<TileEntity> tileEntities = new ArrayList<TileEntity>();
+
+		this.entities = Collections.unmodifiableList(entities);
+		this.tileEntities = Collections.unmodifiableList(tileEntities);
+	}
+	
 	public Schematic(NBTTagCompound compound) {
 		width = compound.getShort("Width");
 		height = compound.getShort("Height");
@@ -130,5 +207,5 @@ public class Schematic {
 
 	public List<TileEntity> getTileEntities() {
 		return tileEntities;
-	}
+	}	
 }

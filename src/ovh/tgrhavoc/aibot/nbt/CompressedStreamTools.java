@@ -17,13 +17,97 @@
  *******************************************************************************/
 package ovh.tgrhavoc.aibot.nbt;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.InflaterInputStream;
+
+import com.sun.media.sound.InvalidDataException;
 
 public class CompressedStreamTools {
+	
 	public CompressedStreamTools() {
 	}
-
+	
+	public static CompressionType detectType(InputStream is) throws IOException{		
+		DataInputStream in = new DataInputStream(is);
+		
+		if(in.markSupported())
+			in.mark(256);
+		
+		byte firstByte = in.readByte();
+		CompressionType type;
+		switch(firstByte){
+		case -1:
+			throw new EOFException();
+		case 0x0a: //NBT Compund tag identifier
+			type = CompressionType.NONE;
+			break;
+		case 0x1F: //GZip magic number
+			type = CompressionType.GZIP;
+			break;
+		case 0x78: //ZLib header
+			type = CompressionType.ZLIB;
+			break;
+		default:
+			throw new InvalidDataException("Could not auto detect the compression format.");
+		}
+		if(in.markSupported())
+			in.reset();
+		return type;
+	}
+	
+	public static NBTTagCompound readStreamAutoDetect(InputStream in) throws IOException{
+		CompressionType type = detectType(in);
+		
+		System.out.println("Found type :" + type);
+		
+		if (type == CompressionType.GZIP){
+			return readCompressed(in);
+		}else if(type == CompressionType.NONE){
+			DataInputStream dIn = new DataInputStream(in);
+			return read(dIn);
+		}else if (type == CompressionType.ZLIB){
+			return readCompressedZlib(in);
+		}else{
+			throw new IllegalArgumentException("Type is null");
+		}
+	}
+	
+	public static NBTTagCompound readCompressedZlib(InputStream in) throws IOException{
+		DataInputStream dis = new DataInputStream(new InflaterInputStream(in));
+		try {
+			NBTTagCompound compound = read(dis);
+			return compound;
+		} finally{
+			dis.close();
+		}
+	}
+	
+	public static void writeCompressedZlib(NBTTagCompound compound, OutputStream out) throws IOException{
+		DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(out));
+		
+		try{
+			write(compound, dos);
+		}finally{
+			dos.close();
+		}
+	}
+	
 	/**
 	 * Load the gzipped compound from the inputstream.
 	 */
