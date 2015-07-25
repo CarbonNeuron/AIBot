@@ -33,7 +33,6 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import ovh.tgrhavoc.aibot.LanguageManager;
 import ovh.tgrhavoc.aibot.MinecraftBot;
 import ovh.tgrhavoc.aibot.ProxyData;
 import ovh.tgrhavoc.aibot.ProxyData.ProxyType;
@@ -100,8 +99,8 @@ import ovh.tgrhavoc.aibot.wrapper.commands.TwerkCommand;
 import ovh.tgrhavoc.aibot.wrapper.commands.WalkCommand;
 
 public class CLIBotWrapper extends MinecraftBotWrapper {
-	private CLIBotWrapper(MinecraftBot bot, String owner, LanguageManager lManager) {
-		super(bot, lManager);
+	private CLIBotWrapper(MinecraftBot bot, String owner) {
+		super(bot);
 		addOwner(owner);
 		addBackend(new ChatBackend(this));
 		
@@ -182,28 +181,25 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 		}
 	}
 
-	public static void main(String[] args, LanguageManager manager) {
+	public static void main(String[] args) {
 		// TODO main
 		OptionParser parser = new OptionParser();
-		
-		System.out.println(manager.getUnformattedText("help.help"));
-		
-		parser.acceptsAll(Arrays.asList("h", "help"), manager.getUnformattedText("help.help"));
-		OptionSpec<String> serverOption = parser.acceptsAll(Arrays.asList("s", "server"), manager.getUnformattedText("help.server")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.server"));
-		OptionSpec<String> proxyOption = parser.acceptsAll(Arrays.asList("P", "proxy"), manager.getUnformattedText("help.proxy")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.proxyaddress"));
-		OptionSpec<String> ownerOption = parser.acceptsAll(Arrays.asList("o", "owner"), manager.getUnformattedText("help.owner")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.owner"));
-		OptionSpec<String> usernameOption = parser.acceptsAll(Arrays.asList("u", "username"), manager.getUnformattedText("help.username")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.username"));
-		OptionSpec<String> passwordOption = parser.acceptsAll(Arrays.asList("p", "password"), manager.getUnformattedText("help.password")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.password"));
-		OptionSpec<?> offlineOption = parser.acceptsAll(Arrays.asList("O", "offline"), manager.getUnformattedText("help.offline"));
-		OptionSpec<?> autoRejoinOption = parser.acceptsAll(Arrays.asList("a", "auto-rejoin"), manager.getUnformattedText("help.autorejoin"));
-		OptionSpec<String> protocolOption = parser.accepts("protocol", manager.getUnformattedText("help.protocol")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.version"));
-		OptionSpec<?> protocolsOption = parser.accepts("protocols", manager.getUnformattedText("help.protocols"));
-		OptionSpec<?> mcoServersOption = parser.accepts("mco-servers", manager.getUnformattedText("help.mcoservers"));
-		OptionSpec<String> mcoServerOption = parser.accepts("mco-server", manager.getUnformattedText("help.mcoservers")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.server"));
-		
-		OptionSpec<String> accountListOption = parser.accepts("account-list", manager.getUnformattedText("help.accountlist")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.file"));
-		OptionSpec<String> socksProxyListOption = parser.accepts("socks-proxy-list", manager.getUnformattedText("help.socksproxylist")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.file"));
-		OptionSpec<String> httpProxyListOption = parser.accepts("http-proxy-list", manager.getUnformattedText("help.httpproxylist")).withRequiredArg().describedAs(manager.getUnformattedText("help.arguments.file"));
+		parser.acceptsAll(Arrays.asList("h", "help"), "Show this help dialog.");
+		OptionSpec<String> serverOption = parser.acceptsAll(Arrays.asList("s", "server"), "Server to join.").withRequiredArg().describedAs("server-address[:port]");
+		OptionSpec<String> proxyOption = parser.acceptsAll(Arrays.asList("P", "proxy"), "SOCKS proxy to use. Ignored in presence of 'socks-proxy-list'.").withRequiredArg().describedAs("proxy-address");
+		OptionSpec<String> ownerOption = parser.acceptsAll(Arrays.asList("o", "owner"), "Owner of the bot (username of in-game control).").withRequiredArg().describedAs("username");
+		OptionSpec<String> usernameOption = parser.acceptsAll(Arrays.asList("u", "username"), "Bot username. Ignored in presence of 'account-list'.").withRequiredArg().describedAs("username/email");
+		OptionSpec<String> passwordOption = parser.acceptsAll(Arrays.asList("p", "password"), "Bot password. Ignored in presence of 'offline' or " + "'account-list', or if 'username' is not supplied.").withRequiredArg().describedAs("password");
+		OptionSpec<?> offlineOption = parser.acceptsAll(Arrays.asList("O", "offline"), "Offline-mode. Ignores 'password' and 'account-list' (will " + "generate random usernames if 'username' is not supplied).");
+		OptionSpec<?> autoRejoinOption = parser.acceptsAll(Arrays.asList("a", "auto-rejoin"), "Auto-rejoin a server on disconnect.");
+		OptionSpec<String> protocolOption = parser.accepts("protocol", "Protocol version to use. Can be either protocol number or Minecraft version.").withRequiredArg();
+		OptionSpec<?> protocolsOption = parser.accepts("protocols", "List available protocols and exit.");
+		OptionSpec<?> mcoServersOption = parser.accepts("mco-servers", "List available MCO (Realms) servers.");
+		OptionSpec<String> mcoServerOption = parser.accepts("mco-server", "Connect to an MCO (Realms) server. Can be a name, ID, or index (in order of priority).").withRequiredArg().describedAs("server");
+
+		OptionSpec<String> accountListOption = parser.accepts("account-list", "File containing a list of accounts, in username/email:password format.").withRequiredArg().describedAs("file");
+		OptionSpec<String> socksProxyListOption = parser.accepts("socks-proxy-list", "File containing a list of SOCKS proxies, in address:port format.").withRequiredArg().describedAs("file");
+		OptionSpec<String> httpProxyListOption = parser.accepts("http-proxy-list", "File containing a list of HTTP proxies, in address:port format.").withRequiredArg().describedAs("file");
 
 		OptionSet options;
 		try {
@@ -222,11 +218,11 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 			return;
 		}
 		if(options.has(protocolsOption)) {
-			System.out.println(manager.getUnformattedText("text.protocols.available"));
+			System.out.println("Available protocols:");
 			for(ProtocolProvider<?> provider : ProtocolProvider.getProviders())
-				System.out.println(manager.getFormattedText("text.protocols.protocol", provider.getMinecraftVersion(), provider.getSupportedVersion(), provider.getClass().getName()));
-			System.out.println(manager.getUnformattedText("text.protocols.nonelisted"));
-			System.out.println(manager.getUnformattedText("text.protocols.nonespecified"));
+				System.out.println("\t" + provider.getMinecraftVersion() + " (" + provider.getSupportedVersion() + "): " + provider.getClass().getName());
+			System.out.println("If no protocols are listed above, you may attempt to specify a protocol version in case the provider is actually in the class-path.");
+			System.out.println("If no protocol is specified, it wil take the latest protocol version, assuming there are protocols listed above.");
 			return;
 		}
 
@@ -246,7 +242,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 				if(!offline && options.has(passwordOption))
 					password = options.valueOf(passwordOption);
 				else if(!offline) {
-					System.out.println(manager.getFormattedText("text.options.required.two", "password", "offline"));
+					System.out.println("Option 'password' or option " + "'offline' required.");
 					printHelp(parser);
 					return;
 				} else
@@ -259,11 +255,11 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 
 		if(options.has(mcoServersOption)) {
 			if(offline) {
-				System.out.println(manager.getUnformattedText("text.mco.error.authentication"));
+				System.out.println("Must be online with authentication details for MCO.");
 				return;
 			}
 			if(username == null || password == null) {
-				System.out.println(manager.getUnformattedText("text.mco.error.username"));
+				System.out.println("Username and password must be provided for MCO.");
 				return;
 			}
 			ProxyData proxy = null;
@@ -275,59 +271,57 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 			try {
 				session = service.login(username, password, proxy);
 			} catch(AuthenticationException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.details"));
+				System.err.println("Invalid authentication details:");
 				exception.printStackTrace();
 				return;
 			} catch(IOException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.auth"));
+				System.err.println("Unable to retrieve auth details:");
 				exception.printStackTrace();
 				return;
 			}
-			
-			//TODO: If debug
-			//System.out.println("Requesting MCO server list...");
-			
+
+			System.out.println("Requesting MCO server list...");
 			RealmsUtil.Server[] servers;
 			try {
 				servers = RealmsUtil.requestServers(session, proxy);
 			} catch(IOException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.request"));
+				System.err.println("Unable to request MCO servers:");
 				exception.printStackTrace();
 				return;
 			}
 
 			if(servers.length == 0) {
-				System.out.println(manager.getUnformattedText("text.mco.error.noservers"));
+				System.out.println("No servers found!");
 				return;
 			}
-			System.out.println(manager.getFormattedText("text.mco.server.available", servers.length));
+			System.out.println("Available servers (" + servers.length + "):");
 			for(RealmsUtil.Server server : servers) {
-				System.out.println(manager.getFormattedText("text.mco.server.name", server.getName(), server.getId()));
-				System.out.println(manager.getFormattedText("text.mco.server.owner", server.getOwner()));
-				System.out.println(manager.getFormattedText("text.mco.server.motd", server.getMotd()));
-				System.out.println(manager.getFormattedText("text.mco.server.difficulty", Difficulty.getDifficultyById(server.getDifficulty()).name()));
-				System.out.println(manager.getFormattedText("text.mco.server.gamemode", GameMode.getGameModeById(server.getGameMode()).name()));
+				System.out.println("\t" + server.getName() + " (" + server.getId() + "):");
+				System.out.println("\t\tOwner: " + server.getOwner());
+				System.out.println("\t\tMOTD: " + server.getMotd());
+				System.out.println("\t\tDifficulty: " + Difficulty.getDifficultyById(server.getDifficulty()).name());
+				System.out.println("\t\tGame Mode: " + GameMode.getGameModeById(server.getGameMode()).name());
 				if(!server.isExpired())
-					System.out.println(manager.getFormattedText("text.mco.server.subscription.left", server.getDaysLeft()));
+					System.out.println("\t\tSubscription: " + server.getDaysLeft() + " days left");
 				else
-					System.out.println(manager.getUnformattedText("text.mco.server.subscription.expired"));
-				System.out.println(manager.getFormattedText("text.mco.server.state", server.getState()));
+					System.out.println("\t\tSubscription: Expired");
+				System.out.println("\t\tState: " + server.getState());
 			}
 			return;
 		}
 
 		final String server;
 		if(!options.has(serverOption) && !options.has(mcoServerOption)) {
-			System.out.println(manager.getFormattedText("text.options.required", "server"));
+			System.out.println("Option 'server' required.");
 			printHelp(parser);
 			return;
 		} else if(options.has(mcoServerOption)) {
 			if(offline) {
-				System.out.println(manager.getUnformattedText("text.mco.error.authentication"));
+				System.out.println("Must be online with authentication details for MCO.");
 				return;
 			}
 			if(username == null || password == null) {
-				System.out.println(manager.getUnformattedText("text.mco.error.username"));
+				System.out.println("Username and password must be provided for MCO.");
 				return;
 			}
 			ProxyData proxy = null;
@@ -338,11 +332,11 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 			try {
 				session = service.login(username, password, proxy);
 			} catch(AuthenticationException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.details"));
+				System.err.println("Invalid authentication details:");
 				exception.printStackTrace();
 				return;
 			} catch(IOException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.auth"));
+				System.err.println("Unable to retrieve auth details:");
 				exception.printStackTrace();
 				return;
 			}
@@ -351,7 +345,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 			try {
 				availableServers = RealmsUtil.requestServers(session, proxy);
 			} catch(IOException exception) {
-				System.err.println(manager.getUnformattedText("text.mco.error.request"));
+				System.err.println("Unable to request MCO servers or server address:");
 				exception.printStackTrace();
 				return;
 			}
@@ -371,7 +365,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 				} catch(NumberFormatException exception) {}
 			}
 			if(targetServer == null) {
-				System.out.println(manager.getUnformattedText("text.mco.error.noserver"));
+				System.out.println("No MCO server by name, ID, or index (ordered by priority) found! Try listing servers with --mco-servers");
 				return;
 			}
 
@@ -382,7 +376,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 					break;
 				} catch(IOException exception) {
 					if(i == 5) {
-						System.err.println(manager.getUnformattedText("text.mco.error.connect"));
+						System.err.println("Unable to retrieve MCO server address to connect:");
 						exception.printStackTrace();
 						return;
 					}
@@ -392,7 +386,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 				} catch(InterruptedException exception) {}
 			}
 			if(address == null) {
-				System.out.println(manager.getUnformattedText("text.mco.error.connect"));
+				System.out.println("Unable to retrieve MCO server address to connect.");
 				return;
 			}
 			server = address;
@@ -401,7 +395,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 
 		final String owner;
 		if(!options.has(ownerOption)) {
-			System.out.println(manager.getFormattedText("text.options.required", "owner"));
+			System.out.println("Option 'owner' required.");
 			printHelp(parser);
 			return;
 		} else
@@ -419,7 +413,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 					if(protocolString.equals(provider.getMinecraftVersion()))
 						foundProvider = provider;
 				if(foundProvider == null) {
-					System.out.println(manager.getFormattedText("text.provider.noprovider", protocolString));
+					System.out.println("No provider found for Minecraft version '" + protocolString + "'.");
 					return;
 				} else
 					parsedProtocol = foundProvider.getSupportedVersion();
@@ -445,7 +439,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 		if(options.has(httpProxyListOption))
 			httpProxies = loadLoginProxies(options.valueOf(httpProxyListOption));
 		else if(username == null && accounts != null) {
-			System.out.println(manager.getFormattedText("text.options.requiredwith", "http-proxy-list", "account-list"));
+			System.out.println("Option 'http-proxy-list' required in presence " + "of option 'account-list'.");
 			printHelp(parser);
 			return;
 		} else
@@ -491,7 +485,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 				while(true) {
 					String proxy = socksProxies != null ? socksProxies.get(random.nextInt(socksProxies.size())) : defaultProxy;
 					try {
-						CLIBotWrapper bot = new CLIBotWrapper(createBot(server, session.getUsername(), session.getPassword(), authService, session, protocol, null, proxy, manager), owner, manager);
+						CLIBotWrapper bot = new CLIBotWrapper(createBot(server, session.getUsername(), session.getPassword(), authService, session, protocol, null, proxy), owner);
 						if(!bot.getBot().isConnected())
 							System.out.println("[" + session.getUsername() + "] Account failed");
 						while(bot.getBot().isConnected()) {
@@ -518,7 +512,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 						name = Util.generateRandomString(10 + random.nextInt(6));
 					else
 						name = username;
-					CLIBotWrapper bot = new CLIBotWrapper(createBot(server, name, null, null, null, protocol, null, proxy, manager), owner, manager);
+					CLIBotWrapper bot = new CLIBotWrapper(createBot(server, name, null, null, null, protocol, null, proxy), owner);
 					while(bot.getBot().isConnected()) {
 						try {
 							Thread.sleep(1500);
@@ -621,7 +615,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 		return new ProxyData(proxyData, port, type);
 	}
 
-	private static MinecraftBot createBot(String server, String username, String password, AuthService<?> service, Session session, int protocol, String loginProxy, String proxy, LanguageManager manager) throws AuthenticationException, UnsupportedProtocolException, IOException {
+	private static MinecraftBot createBot(String server, String username, String password, AuthService<?> service, Session session, int protocol, String loginProxy, String proxy) throws AuthenticationException, UnsupportedProtocolException, IOException {
 		MinecraftBot.Builder builder = MinecraftBot.builder();
 		if(proxy != null && !proxy.isEmpty()) {
 			int port = 80;
@@ -658,8 +652,8 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 			}
 			builder.server(server).port(port);
 		} else
-			throw new IllegalArgumentException(manager.getUnformattedText("error.illegalargumentexception.unknownserver"));
+			throw new IllegalArgumentException("Unknown server!");
 
-		return builder.build(manager);
+		return builder.build();
 	}
 }

@@ -93,11 +93,9 @@ public class MinecraftBot implements EventListener {
 	private int messageDelay = 2000;
 	private long lastMessage;
 	private Activity activity;
-	
-	private LanguageManager languageManger;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private MinecraftBot(Builder builder, LanguageManager manager) throws AuthenticationException, UnsupportedProtocolException, InvalidSessionException, IOException {
+	private MinecraftBot(Builder builder) throws AuthenticationException, UnsupportedProtocolException, InvalidSessionException, IOException {
 		service = Executors.newCachedThreadPool();
 		eventBus = new ConcurrentEventBus();
 		eventBus.register(this);
@@ -107,7 +105,7 @@ public class MinecraftBot implements EventListener {
 		if(builder.getProtocol() >= 0) {
 			ProtocolProvider<?> provider = ProtocolProvider.getProvider(builder.getProtocol());
 			if(provider == null)
-				throw new UnsupportedProtocolException(getLanguageManger().getFormattedText("error.unsupportedprotocolexception", builder.getProtocol()));
+				throw new UnsupportedProtocolException("No protocol support for v" + builder.getProtocol() + " found.");
 			protocol = provider.getProtocolInstance(this);
 		} else
 			protocol = ProtocolProvider.getLatestProvider().getProtocolInstance(this);
@@ -520,8 +518,8 @@ public class MinecraftBot implements EventListener {
 			return this;
 		}
 
-		public synchronized MinecraftBot build(LanguageManager manager) throws AuthenticationException, UnsupportedProtocolException, InvalidSessionException, IOException {
-			return new MinecraftBot(this, manager);
+		public synchronized MinecraftBot build() throws AuthenticationException, UnsupportedProtocolException, InvalidSessionException, IOException {
+			return new MinecraftBot(this);
 		}
 
 		public String getServer() {
@@ -559,13 +557,5 @@ public class MinecraftBot implements EventListener {
 		public Session getSession() {
 			return session;
 		}
-	}
-
-	public LanguageManager getLanguageManger() {
-		return languageManger;
-	}
-
-	public void setLanguageManger(LanguageManager languageManger) {
-		this.languageManger = languageManger;
 	}
 }
