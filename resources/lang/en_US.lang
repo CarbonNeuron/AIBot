@@ -1,6 +1,75 @@
-//Language information
+//Language information. Might need for something...
 language.name=English
 lamguage.english.name=English
 language.code=en_US
 
-//General phrases
+//Help messages
+help.help=Shows this help message.
+help.server=Server to join.
+help.proxy=SOCKS proxy to use. Ignored in presence of 'socks-proxy-list'.
+help.owner=Owner of the bot (username of in-game control).
+help.username=Bot username. Ignored in presence of 'account-list'.
+help.password=Bot password. Ignored in presence of 'offline' or 'account-list', or if 'username' is not supplied.
+help.offline=Offline-mode. Ignores 'password' and 'account-list' (will generate random username if 'username' is not supplied).
+help.autorejoin=Auto-rejoin a server on disconnect.
+help.protocol=Protocol version to use. Can be either protocol number or Minecraft version.
+help.protocols=List available protocols and exit.
+help.mcoservers=List available MCO (Realms) servers.
+help.mcoserver=Connect to an MCO (Realms) server. Can be a name, ID, or index (in order of priority).
+help.accountlist=File containing a list of accounts, in username/email:password format.
+help.socksproxylist=File containing a list of SOCKS proxies, in address:port format.
+help.httpproxylist=File containing a list of HTTP proxies, in address:port format.
+
+help.arguments.username=username/email
+help.arguments.owner=username
+help.arguments.password=password
+help.arguments.version=version
+help.arguments.file=file
+help.arguments.serveraddress=server-address[:port]
+help.arguments.proxyaddress=proxy-address
+help.arguments.server=server
+
+//Text components. Used in system.out and system.err
+text.provider.noprovider=No provider found for Minecraft version '%s'.
+text.protocols.available=Available protocols:
+text.protocols.protocol=\t%1$d (%2$d): %3$s
+text.protocols.nonelisted=If no protocols are listed above, you may attempt to specify a protocol version in case the provider is actually in the class-path.
+text.protocols.nonespecified=If no protocol is specified, it wil take the latest protocol version, assuming there are protocols listed above.
+
+text.mco.error.authentication=Must be online with authentication details for MCO.
+text.mco.error.username=Username and password must be provided for MCO.
+text.mco.error.details=Invalid authentication details:
+text.mco.error.auth=Unable to retrieve auth details:
+text.mco.error.request=Unable to request MCO servers:
+text.mco.error.noservers=No servers found!
+text.mco.error.noserver=No MCO server by name, ID, or index (ordered by priority) found! Try listing servers with --mco-servers
+text.mco.error.connect=Unable to retrieve MCO server address to connect
+
+text.mco.server.available=Available servers (%d):
+text.mco.server.name=\t%s (%d):
+text.mco.server.owner=\t\tOwner: %s
+text.mco.server.motd=\t\tMOTD: %s
+text.mco.server.difficulty=\t\tDifficulty: %s
+text.mco.server.gamemode=\t\tGame Mode: %s
+text.mco.server.subscription.left=\t\tSubscription: %d days left
+text.mco.server.subscription.expired=\t\tSubscription: Expired
+text.mco.server.state=\t\tState: %s
+
+text.options.required=Option '%s' required.
+text.options.required.two=Option '%s' or option '%s' required.
+text.options.requiredwith=Option '%s' required in presence of option '%s'.
+
+//Errors
+error.unsupportedprotocolexception=No protocol support for v%d found.
+
+error.illegalstateexception.notconnected=Not connected
+error.illegalstateexception.stateencryption=Already %s data
+error.illegalstateexception.keynotset=Shared key not set
+error.illegalstateexception.keyalreadyset=Shared ket already set
+error.illegalstateexception.thread=Must be called from %s thread
+
+error.ioexception.invalidheader=Invalid header
+error.ioexception.badpacketheader=Bad packet with header [%s]
+
+error.illegalargumentexception.proxynotsupported=%s proxy is not usable for this purpose. (%s)
+error.illegalargumentexception.unknownserver=Unknown Server!
