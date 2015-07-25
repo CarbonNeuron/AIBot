@@ -169,7 +169,7 @@ public class SocketConnectionHandler<H extends PacketHeader> implements Connecti
 	@Override
 	public void setSharedKey(SecretKey sharedKey) {
 		if(this.sharedKey != null)
-			throw new IllegalStateException(bot.getLanguageManger().getUnformattedText("error.illegalstateexception.keyalreadyset"));
+			throw new IllegalStateException("Shared key already set");
 		this.sharedKey = sharedKey;
 	}
 
@@ -181,13 +181,13 @@ public class SocketConnectionHandler<H extends PacketHeader> implements Connecti
 	@Override
 	public synchronized void enableEncryption() {
 		if(!isConnected())
-			throw new IllegalStateException(bot.getLanguageManger().getUnformattedText("error.illegalstateexception.notconnected"));
+			throw new IllegalStateException("Not connected");
 		if(encrypting)
-			throw new IllegalStateException(bot.getLanguageManger().getFormattedText("error.illegalstateexception.stateencryption", "encrypting"));
+			throw new IllegalStateException("Already encrypting");
 		if(sharedKey == null)
-			throw new IllegalStateException(bot.getLanguageManger().getUnformattedText("error.illegalstateexception.keynotset"));
+			throw new IllegalStateException("Shared key not set");
 		if(!pauseWriting.get() && (writeTask.thread == null || writeTask.thread != Thread.currentThread()))
-			throw new IllegalStateException(bot.getLanguageManger().getFormattedText("error.illegalstateexception.thread", "write"));
+			throw new IllegalStateException("Must be called from write thread");
 		connection.setOutputStream(new DataOutputStream(EncryptionUtil.encryptOutputStream(connection.getOutputStream(), sharedKey)));
 		encrypting = true;
 	}
@@ -200,13 +200,13 @@ public class SocketConnectionHandler<H extends PacketHeader> implements Connecti
 	@Override
 	public synchronized void enableDecryption() {
 		if(!isConnected())
-			throw new IllegalStateException(bot.getLanguageManger().getUnformattedText("error.illegalstateexception.notconnected"));
+			throw new IllegalStateException("Not connected");
 		if(decrypting)
-			throw new IllegalStateException(bot.getLanguageManger().getFormattedText("error.illegalstateexception.stateencryption", "decrypting"));
+			throw new IllegalStateException("Already decrypting");
 		if(sharedKey == null)
-			throw new IllegalStateException(bot.getLanguageManger().getUnformattedText("error.illegalstateexception.keynotset"));
+			throw new IllegalStateException("Shared key not set");
 		if(!pauseReading.get() && (readTask.thread == null || readTask.thread != Thread.currentThread()))
-			throw new IllegalStateException(bot.getLanguageManger().getFormattedText("error.illegalstateexception.thread", "read"));
+			throw new IllegalStateException("Must be called from read thread");
 		connection.setInputStream(new DataInputStream(EncryptionUtil.decryptInputStream(connection.getInputStream(), sharedKey)));
 		decrypting = true;
 	}
@@ -290,10 +290,10 @@ public class SocketConnectionHandler<H extends PacketHeader> implements Connecti
 					DataInputStream in = connection.getInputStream();
 					final H header = protocol.readHeader(in);
 					if(header == null)
-						throw new IOException(bot.getLanguageManger().getUnformattedText("error.ioexception.invalidheader"));
+						throw new IOException("Invalid header");
 					ReadablePacket packet = (ReadablePacket) protocol.createPacket(header);
 					if(packet == null || !(packet instanceof ReadablePacket))
-						throw new IOException(bot.getLanguageManger().getFormattedText("error.ioexception.badpacketheader", header.toString()));
+						throw new IOException("Bad packet with header: " + header.toString());
 
 					if(header instanceof PacketLengthHeader) {
 						int length = ((PacketLengthHeader) header).getLength() - AbstractPacketX.varIntLength(header.getId());
