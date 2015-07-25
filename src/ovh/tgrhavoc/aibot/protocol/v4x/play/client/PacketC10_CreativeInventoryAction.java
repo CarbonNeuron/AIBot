@@ -17,19 +17,18 @@
  *******************************************************************************/
 package ovh.tgrhavoc.aibot.protocol.v4x.play.client;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
-import ovh.tgrhavoc.aibot.protocol.AbstractPacketX;
+import ovh.tgrhavoc.aibot.protocol.*;
 import ovh.tgrhavoc.aibot.protocol.ProtocolX.State;
-import ovh.tgrhavoc.aibot.protocol.WriteablePacket;
 
 public class PacketC10_CreativeInventoryAction extends AbstractPacketX implements WriteablePacket {
-	
+
 	public PacketC10_CreativeInventoryAction() {
-		super(0x0, State.PLAY, Direction.UPSTREAM);
+		super(0x00, State.PLAY, Direction.UPSTREAM);
 	}
 
 	@Override
-	public void writeData(DataOutputStream out) throws IOException {}
+	public void writeData(DataOutputStream out) throws IOException {
+	}
 }

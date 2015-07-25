@@ -355,7 +355,7 @@ public final class Protocol4X extends AbstractProtocolX implements EventListener
 		bot.getConnectionHandler().sendPacket(new PacketHC00_Handshake(VERSION, event.getServer(), event.getPort(), State.LOGIN));
 		bot.getConnectionHandler().sendPacket(new PacketLC00_LoginStart(event.getSession().getUsername()));
 	}
-	
+
 	@EventHandler
 	public void onInventoryChange(InventoryChangeEvent event) {
 		ConnectionHandler handler = bot.getConnectionHandler();

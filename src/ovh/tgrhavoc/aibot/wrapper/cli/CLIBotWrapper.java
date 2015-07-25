@@ -103,7 +103,7 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 		super(bot);
 		addOwner(owner);
 		addBackend(new ChatBackend(this));
-		
+
 		TaskManager taskManager = bot.getTaskManager();
 		taskManager.registerTask(new FallTask(bot));
 		taskManager.registerTask(new ChopTreesTask(bot));
@@ -152,7 +152,8 @@ public class CLIBotWrapper extends MinecraftBotWrapper {
 		
 		commandManager.register(new TwerkCommand(this));
 		commandManager.register(new CrouchCommand(this));
-		commandManager.register(new MuteCommand(this));		
+		commandManager.register(new MuteCommand(this));
+		
 		
 		BufferedReader consoleIn = new BufferedReader(new InputStreamReader(System.in));
 		while(bot.isConnected()){
