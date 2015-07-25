@@ -27,14 +27,15 @@ public class LanguageManager {
 			
 			String line = null;
 			while((line = reader.readLine()) != null){
+				//System.out.println("Parsing: " + line);
 				int index = line.indexOf('=');
 				if(index == -1)
 					continue;
 				String key = line.substring(0, index);
 				String value = line.substring(index + 1);
 				lang.put(key, value);
+				//System.out.printf("Put key '%s' with value '%s'\n", key, value);
 			}
-			
 			reader.close();
 		}catch (Exception e) {
 			e.printStackTrace();

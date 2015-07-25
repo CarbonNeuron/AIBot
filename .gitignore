@@ -1,6 +1,7 @@
 /bin/
 /.settings/
 /protocols/
+/langs/
 
 .classpath
 .project
