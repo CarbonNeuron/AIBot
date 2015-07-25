@@ -19,20 +19,26 @@ package ovh.tgrhavoc.aibot.wrapper;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import ovh.tgrhavoc.aibot.LanguageManager;
 import ovh.tgrhavoc.aibot.MinecraftBot;
 import ovh.tgrhavoc.aibot.Util;
 import ovh.tgrhavoc.aibot.ai.TaskManager;
-import ovh.tgrhavoc.aibot.event.*;
+import ovh.tgrhavoc.aibot.event.EventHandler;
+import ovh.tgrhavoc.aibot.event.EventListener;
 import ovh.tgrhavoc.aibot.event.general.DisconnectEvent;
 import ovh.tgrhavoc.aibot.event.protocol.client.RequestRespawnEvent;
-import ovh.tgrhavoc.aibot.event.protocol.server.*;
+import ovh.tgrhavoc.aibot.event.protocol.server.ChatReceivedEvent;
+import ovh.tgrhavoc.aibot.event.protocol.server.HealthUpdateEvent;
+import ovh.tgrhavoc.aibot.event.protocol.server.RespawnEvent;
 import ovh.tgrhavoc.aibot.event.world.SpawnEvent;
 import ovh.tgrhavoc.aibot.world.entity.MainPlayerEntity;
 import ovh.tgrhavoc.aibot.world.item.PlayerInventory;
 import ovh.tgrhavoc.aibot.wrapper.backend.Backend;
-import ovh.tgrhavoc.aibot.wrapper.commands.*;
+import ovh.tgrhavoc.aibot.wrapper.commands.BasicCommandManager;
+import ovh.tgrhavoc.aibot.wrapper.commands.CommandManager;
 
 public abstract class MinecraftBotWrapper implements EventListener {
 	protected final MinecraftBot bot;
@@ -40,9 +46,12 @@ public abstract class MinecraftBotWrapper implements EventListener {
 
 	private final List<Backend> backends = new CopyOnWriteArrayList<>();
 	private final List<String> owners = new CopyOnWriteArrayList<>();
-
-	public MinecraftBotWrapper(MinecraftBot bot) {
+	
+	private LanguageManager langManager;
+	
+	public MinecraftBotWrapper(MinecraftBot bot, LanguageManager manager) {
 		this.bot = bot;
+		this.langManager = manager;
 
 		commandManager = new BasicCommandManager(this);
 		bot.getEventBus().register(this);
@@ -141,5 +150,9 @@ public abstract class MinecraftBotWrapper implements EventListener {
 
 	public final MinecraftBot getBot() {
 		return bot;
+	}
+
+	public LanguageManager getLangManager() {
+		return langManager;
 	}
 }

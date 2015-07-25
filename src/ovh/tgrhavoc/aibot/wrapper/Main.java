@@ -25,12 +25,14 @@ import java.util.Arrays;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import ovh.tgrhavoc.aibot.Util;
+import joptsimple.OptionSpec;
+import ovh.tgrhavoc.aibot.LanguageManager;
 import ovh.tgrhavoc.aibot.wrapper.cli.CLIBotWrapper;
 
 public class Main {
 	public static void main(String[] args) {
 		printNotice();
+		LanguageManager.setUp();
 		
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(Arrays.asList("d", "debug"), "Enables debug mode (WIP)");
@@ -38,9 +40,10 @@ public class Main {
 		parser.acceptsAll(Arrays.asList("c", "conditions"), "Prints Terms and Conditions");
 		parser.acceptsAll(Arrays.asList("b", "bot"), "Starts bot arguments");
 		
+		OptionSpec<String> languageSpec = parser.acceptsAll(Arrays.asList("l", "language"), "Set the language file").withRequiredArg().describedAs("Language file name");
+		
 		int end = 0;
 		for (int i = 0; i< args.length; i++){
-			System.out.println(args[i]);
 			if (args[i].equals("-b") || args[i].equalsIgnoreCase("--bot")){
 				end = i + 1;
 				break;
@@ -49,9 +52,6 @@ public class Main {
 		
 		String[] mainArgs = Arrays.copyOfRange(args, 0, end);
 		String[] botArgs = Arrays.copyOfRange(args, end, args.length);
-		
-		System.out.println(Util.join(mainArgs) + " (main) ");
-		System.out.println(Util.join(botArgs) + "(bot)");
 		
 		OptionSet options;
 		try {
@@ -65,13 +65,17 @@ public class Main {
 			printTC();
 			return;
 		}
-		
 		if(options.has("help")) {
 			printHelp(parser);
 			return;
 		}
-		
-		CLIBotWrapper.main(botArgs);
+
+		String langFile = "en_US.lang";
+		if (options.has(languageSpec)){
+			langFile = options.valueOf(languageSpec);
+		}
+		LanguageManager manager = new LanguageManager(langFile);
+		CLIBotWrapper.main(botArgs, manager);
 	}
 	
 	private static void printTC(){
