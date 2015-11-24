@@ -50,8 +50,8 @@ public class Main {
 		String[] mainArgs = Arrays.copyOfRange(args, 0, end);
 		String[] botArgs = Arrays.copyOfRange(args, end, args.length);
 		
-		System.out.println(Util.join(mainArgs) + " (main) ");
-		System.out.println(Util.join(botArgs) + "(bot)");
+		//System.out.println(Util.join(mainArgs) + " (main) ");
+		//System.out.println(Util.join(botArgs) + "(bot)");
 		
 		OptionSet options;
 		try {
