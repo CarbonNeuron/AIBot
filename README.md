@@ -24,7 +24,7 @@ If you don't want to modify the code in any way, then read this to get started.
 
 1. Download the binary files for the [latest release of the project.](https://github.com/TGRHavoc/AIBot/releases)
 2. Run the JAR file using the command line or batch/bash file
-   1. Use `java -jar AIBot.jar --help` for a list of all available commands
+   1. Use `java -jar AIBot.jar -b --help` for a list of all available arguments
 
 If you're on windows, I've created a [simple batch file](https://github.com/TGRHavoc/AIBot/blob/master/start_bot.bat) that you can use to run the bot quickly, just make sure you change the values in the file to suite your needs.
 
