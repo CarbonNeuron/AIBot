@@ -3,7 +3,7 @@
 		<property name="outputDir" value="bin" />
 		<property name="protocolsDir" value="protocols" />
 		<property name="protocolsPackage" value="ovh.tgrhavoc.aibot.protocol" />
-		<property name="deployJar" value="AIBot.jar" />
+		<property name="deployJar" value="build/AIBot.jar" />
 		<property name="libraryDir" value="lib" />
 		<property name="tempDir" value="temp" />
 		<property name="mainClass" value="ovh.tgrhavoc.aibot.wrapper.Main" />
