@@ -1,6 +1,8 @@
 # AIBot
 An automated bot for the game Minecraft.
 
+__Note: This is *NOT* for Minecarft 1.8 or above__
+
 # Getting Started
 
 ### Required Arguments
