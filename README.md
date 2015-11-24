@@ -33,4 +33,4 @@ If you're on windows, I've created a [simple batch file](https://github.com/TGRH
 
 Enjoy!
 
-~ ~ Havoc
+~ Havoc
