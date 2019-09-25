@@ -2,7 +2,7 @@
 An automated bot for the game Minecraft.
 
 __Note: This is *NOT* for Minecraft 1.8 or above__
-
+(dosent work)
 # Getting Started
 
 ### Required Arguments
